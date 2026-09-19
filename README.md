@@ -1,7 +1,8 @@
 # kubeseal-ui docs
 
 Jekyll site for the kubeseal-ui documentation, published to GitHub Pages at
-**https://kubeseal-ui.github.io/docs/**.
+**https://kubeseal-ui.github.io/** (the repository is the user site
+`kubeseal-ui.github.io`, so pages serve at the root).
 
 The theme is a custom `jekyll-theme` layout in `_layouts/default.html` plus
 `assets/css/site.css`: no remote theme dependency, no build step beyond the
