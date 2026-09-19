@@ -3,8 +3,6 @@ title: Observability
 description: Metrics, traces, and logs over OTLP, with ServiceMonitor, alerts, and web vitals.
 ---
 
-# Observability
-
 kubeseal-ui emits three backend signals through **one SDK** (`go.opentelemetry.io/otel`) and **one protocol**
 (OTLP gRPC): metrics, traces, and logs, all exported to a collector. Prometheus, Loki, and Tempo read from it.
 The frontend reports Web Vitals separately. The wiring is optional infrastructure: with no OTLP endpoint the

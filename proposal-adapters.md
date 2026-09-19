@@ -3,8 +3,6 @@ title: Proposal adapters
 description: The adapter contract, the GitHub adapter with a fine-grained PAT, and fail-closed configuration rules.
 ---
 
-# Proposal adapters
-
 Git delivery in kubeseal-ui is platform-agnostic: fetch, branch, commit, and push go through a go-git
 transport that works with any compatible remote. Only the review object (pull request, merge request) is host
 specific, and that is the sole job of a proposal adapter.

@@ -3,8 +3,6 @@ title: Runbook
 description: Operational failure modes with the check that decides each one.
 ---
 
-# Runbook
-
 Operational failure modes with the check that decides each one. The API logs one structured JSON line per
 request with a `request_id`; quote it when asking for help. Security events carry identity and resource fields
 only, never values.

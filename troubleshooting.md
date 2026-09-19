@@ -3,8 +3,6 @@ title: Troubleshooting
 description: Failure modes with the check that decides each one.
 ---
 
-# Troubleshooting kubeseal-ui
-
 Failure modes operators hit in practice, with the check that decides each one. The API logs one structured
 JSON line per request with a `request_id`; quote it when asking for help and remember that security events
 carry identity and resource fields only, never values.
