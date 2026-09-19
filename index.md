@@ -1,4 +1,7 @@
-# kubeseal-ui documentation
+---
+title: kubeseal-ui documentation
+description: Team-oriented administration interface for Git-managed Kubernetes SealedSecrets.
+---
 
 Public documentation for kubeseal-ui, a team-oriented administration interface for Git-managed Kubernetes
 SealedSecrets. Operators install the chart, wire OIDC, and map namespaces to Git repositories; team members
@@ -14,7 +17,7 @@ then update individual secret values without seeing unrelated plaintext.
 
 ## Getting started
 
-1. **Install the chart** — [installation.md](install.md) covers the minimal install, the values that fail the
+1. **Install the chart** — [install.md](install.md) covers the minimal install, the values that fail the
    render, decrypt mode, and image pinning.
 2. **Wire OIDC** — [oidc.md](oidc.md) covers issuer registration, the callback URI, sessions, and CSRF.
 3. **Map namespaces to Git** — [gitops.md](gitops.md) covers the namespace mapping, typed credentials, direct
@@ -26,20 +29,7 @@ then update individual secret values without seeing unrelated plaintext.
 6. **Monitor** — [observability.md](observability.md) covers the metrics, traces, logs, ServiceMonitor, and
    alerts.
 
-## Reference
-
-- [Troubleshooting](troubleshooting.md) — failure modes with the check that decides each one
-- [Security and threat model](security.md) — protected assets, threat actors, required controls
-- [Capabilities and roles](capabilities.md) — what each capability allows, built-in roles, platform-admin
-  boundaries
-
-## Support
-
-Community support via GitHub issues on the affected repository: no hosted service, no availability SLO. Report
-vulnerabilities privately through the repository's Security tab. The issue templates demand version
-information, sanitized mappings, request IDs, and redacted logs; never attach plaintext, ciphertext, tokens,
-cookies, or credential-bearing URLs.
-
-## License
-
-MIT.
+The sidebar carries the full page list. Community support runs through GitHub issues on the affected
+repository: no hosted service, no availability SLO. Report vulnerabilities privately through the repository's
+Security tab. The issue templates demand version information, sanitized mappings, request IDs, and redacted
+logs; never attach plaintext, ciphertext, tokens, cookies, or credential-bearing URLs.

@@ -1,3 +1,8 @@
+---
+title: Troubleshooting
+description: Failure modes with the check that decides each one.
+---
+
 # Troubleshooting kubeseal-ui
 
 Failure modes operators hit in practice, with the check that decides each one. The API logs one structured

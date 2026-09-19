@@ -1,3 +1,8 @@
+---
+title: Installation
+description: Install the chart: minimal install, decrypt mode, values that fail the render, image pinning, observability, and NetworkPolicy.
+---
+
 # Installation
 
 ## Prerequisites

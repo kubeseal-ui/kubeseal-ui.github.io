@@ -1,3 +1,8 @@
+---
+title: OIDC setup
+description: Register the application, configure the chart, sessions, CSRF, and group claims.
+---
+
 # OIDC setup
 
 kubeseal-ui uses OpenID Connect with the authorization code flow and PKCE. It works with any OpenID Connect

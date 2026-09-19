@@ -1,3 +1,8 @@
+---
+title: Observability
+description: Metrics, traces, and logs over OTLP, with ServiceMonitor, alerts, and web vitals.
+---
+
 # Observability
 
 kubeseal-ui emits three backend signals through **one SDK** (`go.opentelemetry.io/otel`) and **one protocol**

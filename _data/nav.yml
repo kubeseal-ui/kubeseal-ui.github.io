@@ -1,0 +1,26 @@
+- group: Getting started
+  pages:
+    - title: Installation
+      url: install
+    - title: OIDC setup
+      url: oidc
+- group: Delivery
+  pages:
+    - title: GitOps
+      url: gitops
+    - title: Proposal adapters
+      url: proposal-adapters
+- group: Operations
+  pages:
+    - title: Runbook
+      url: runbook
+    - title: Troubleshooting
+      url: troubleshooting
+    - title: Observability
+      url: observability
+- group: Reference
+  pages:
+    - title: Capabilities and roles
+      url: capabilities
+    - title: Security and threat model
+      url: security

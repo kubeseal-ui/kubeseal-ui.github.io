@@ -1,3 +1,8 @@
+---
+title: Security and threat model
+description: Protected assets, threat actors, and the controls that hold.
+---
+
 # Security and threat model
 
 kubeseal-ui is a security-sensitive product: its whole purpose is keeping secret plaintext confined while

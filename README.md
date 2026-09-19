@@ -1,25 +1,45 @@
 # kubeseal-ui docs
 
-Public documentation for [kubeseal-ui](index.md), a team-oriented administration interface for Git-managed
-Kubernetes SealedSecrets.
+Jekyll site for the kubeseal-ui documentation, published to GitHub Pages at
+**https://kubeseal-ui.github.io/docs/**.
 
-Start with the [documentation index](index.md):
+The theme is a custom `jekyll-theme` layout in `_layouts/default.html` plus
+`assets/css/site.css`: no remote theme dependency, no build step beyond the
+standard `jekyll-build-pages` action. Navigation, theme tokens, and the docs
+index live in `_data/`.
 
-- [Installation](install.md)
-- [OIDC setup](oidc.md)
-- [GitOps delivery](gitops.md)
-- [Proposal adapters](proposal-adapters.md)
-- [Observability](observability.md)
-- [Runbook](runbook.md)
-- [Capabilities and roles](capabilities.md)
-- [Troubleshooting](troubleshooting.md)
-- [Security and threat model](security.md)
+## Structure
 
-## Support
+```text
+_config.yml            Jekyll config (theme, markdown, permalinks)
+_data/nav.yml          Sidebar navigation (order, groups, labels)
+_layouts/default.html  Page shell: header, sidebar, content, footer
+assets/css/site.css    Design tokens + component styles (light/dark)
+*.md                   The documentation pages (front matter: title, nav order)
+```
 
-Community support via GitHub issues on the affected repository: no hosted service, no availability SLO. Report
-vulnerabilities privately through the repository's Security tab.
+## Editing
 
-## License
+Add a page: create `mypage.md` with front matter and register it in
+`_data/nav.yml`:
 
-MIT.
+```markdown
+---
+title: My page
+description: One-line summary for the index.
+---
+content
+```
+
+The sidebar order follows `nav.yml`; pages without a nav entry land under
+"Reference".
+
+## Verify locally
+
+```bash
+bundle exec jekyll serve
+# or: docker run -p 4000:4000 -v "$PWD:/site" jekyll/jekyll jekyll serve
+```
+
+CI builds on push to `main` via `.github/workflows/pages.yml` (GitHub Pages,
+Source: GitHub Actions).

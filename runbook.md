@@ -1,3 +1,8 @@
+---
+title: Runbook
+description: Operational failure modes with the check that decides each one.
+---
+
 # Runbook
 
 Operational failure modes with the check that decides each one. The API logs one structured JSON line per

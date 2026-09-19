@@ -1,3 +1,8 @@
+---
+title: GitOps delivery
+description: Namespace mappings, typed credentials, direct and proposal delivery, and ArgoCD reconciliation.
+---
+
 # GitOps delivery
 
 kubeseal-ui delivers sealed secrets to Git through a namespace mapping that is the only server-side source of

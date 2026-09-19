@@ -1,0 +1,21 @@
+title: kubeseal-ui documentation
+description: Team-oriented administration interface for Git-managed Kubernetes SealedSecrets.
+theme: null
+markdown: kramdown
+permalink: pretty
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: default
+exclude:
+  - LICENSE
+  - README.md
+  - .github
+sass:
+  style: compressed

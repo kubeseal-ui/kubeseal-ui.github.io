@@ -1,3 +1,8 @@
+---
+title: Capabilities and roles
+description: What each capability allows, built-in roles, and the platform-admin boundary.
+---
+
 # Capabilities and roles
 
 kubeseal-ui separates plaintext, platform, and Git-delivery permissions. Roles are convenience bundles only;
