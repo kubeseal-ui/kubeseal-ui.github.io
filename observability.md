@@ -16,12 +16,12 @@ metrics port or admin route exists to misconfigure.
 
 | Metric | Labels |
 |--------|--------|
-| `kubeseal_gui_http_requests_total` | `handler`, `method`, `code` |
-| `kubeseal_gui_http_request_duration_seconds` | `handler`, `method` (buckets 5ms..10s) |
-| `kubeseal_gui_sealed_secret_operations_total` | `operation`, `result` |
-| `kubeseal_gui_gitops_delivery_total` | `mode`, `result` |
-| `kubeseal_gui_openfga_check_total` | `result` |
-| `kubeseal_gui_oidc_auth_total` | `result` |
+| `kubeseal_ui_http_requests_total` | `handler`, `method`, `code` |
+| `kubeseal_ui_http_request_duration_seconds` | `handler`, `method` (buckets 5ms..10s) |
+| `kubeseal_ui_sealed_secret_operations_total` | `operation`, `result` |
+| `kubeseal_ui_gitops_delivery_total` | `mode`, `result` |
+| `kubeseal_ui_openfga_check_total` | `result` |
+| `kubeseal_ui_oidc_auth_total` | `result` |
 
 Cardinality is bounded by construction: labels carry handler/method/code and bounded outcome values only.
 User identities, namespaces, and secret names are excluded from metrics — they belong in the security events
