@@ -1,9 +1,9 @@
 name: Publish documentation to GitHub Pages
 
-# The docs repo only owns Markdown, so the workflow is a single build +
-# deploy job. No mkdocs/docsy dependency: the pages are plain Markdown
-# rendered by GitHub's Markdown preview, and the index links carry the
-# navigation.
+# One build and one deploy: this is a Jekyll site with no theme gem (`theme: null` in
+# _config.yml), so `jekyll-build-pages` needs nothing but the source tree. The layout in
+# _layouts/default.html supplies the header, the sidebar, and the theme control; the sidebar's
+# order and labels come from _data/nav.yml. Nothing here minifies or post-processes the CSS.
 on:
   push:
     branches: [main]

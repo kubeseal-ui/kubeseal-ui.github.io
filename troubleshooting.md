@@ -34,13 +34,20 @@ outage.
 ## Existing secret cannot be edited
 
 Editing an existing secret requires exactly one mapped Git file whose canonical SealedSecret content equals
-the live resource. The error code tells you which side is wrong:
+the live resource. Every state but `in-sync` is refused with the one code `409 GIT_DRIFT`, so the `drift` value
+in the Secret's status is what tells the causes apart:
 
-- `GIT_SOURCE_MISSING`: no file at the derived path on the mapped branch.
-- `GIT_LIVE_DRIFT`: the Git and live content differ. Reconcile first, then edit.
-- identity mismatch (`namespace`/`name` inside the manifest does not match the route): fix the manifest.
-- pending ArgoCD reconciliation: the commit landed but the controller has not applied it yet.
-- out-of-band cluster mutation: someone edited the live SealedSecret; restore one side first.
+- `live_only`: no file at the derived path on the mapped branch.
+- `git_only`: a mapped file with no live Secret at the route.
+- `diverged`: both exist and differ. `drift_reason` names which part and `drift_fields` lists the paths —
+  `identity` (`namespace`/`name` inside the manifest does not match the route; fix the manifest), `keys` or
+  `ciphertext` (the two copies hold different values), or `template`/`metadata` (a non-payload field differs).
+- `unknown`: the status could not be resolved at all.
+
+A read that never reached Git is not drift: it returns `409 GIT_STATE_UNAVAILABLE`, or `409
+BASE_COMMIT_CONFLICT` when the base commit is no longer the branch head. Two further causes carry no code —
+pending ArgoCD reconciliation, where the commit landed but the controller has not applied it yet, and an
+out-of-band cluster mutation, where someone edited the live SealedSecret and one side must be restored first.
 
 ## Reveal unavailable
 
@@ -85,7 +92,7 @@ An unknown `authRef` is an error, never an implicit anonymous push.
 
 ## Proposal adapter failure
 
-A proposal delivery pushes a server-derived branch (`kubeseal-ui/<namespace-path>`) and then asks the host to
+A proposal delivery pushes a server-derived branch (`kubeseal-ui/<namespace>-<name>`) and then asks the host to
 open the review object. If the host call fails you get `502 PROPOSAL_FAILED` and the branch already exists.
 
 1. Retry with a fresh `Idempotency-Key`. The branch name is deterministic, so the retry reconciles onto the

@@ -22,6 +22,12 @@ metrics port or admin route exists to misconfigure.
 | `kubeseal_ui_gitops_delivery_total` | `mode`, `result` |
 | `kubeseal_ui_openfga_check_total` | `result` |
 | `kubeseal_ui_oidc_auth_total` | `result` |
+| `kubeseal_ui_secret_listing_duration_seconds` | `result` (buckets 10ms..30s) |
+| `kubeseal_ui_secret_listing_items` | `result` (buckets 1..1000) |
+
+The two listing instruments are the ones that explain a slow home page: `result` is `success`, or `degraded`
+when at least one Secret's drift could not be resolved and was reported as unknown, and `items` is the count
+the listing returned, because its cost is per Secret.
 
 Cardinality is bounded by construction: labels carry handler/method/code and bounded outcome values only.
 User identities, namespaces, and secret names are excluded from metrics — they belong in the security events
@@ -119,7 +125,7 @@ VITE_TELEMETRY_ENDPOINT: /api/v1/telemetry/vitals
 curl https://kubeseal-ui.example.com/metrics | head
 
 # Prometheus text with the contract metrics.
-curl -s https://kubeseal-ui.example.com/metrics | grep kubeseal_gui
+curl -s https://kubeseal-ui.example.com/metrics | grep kubeseal_ui
 
 # Log lines carry trace correlation once a span is recording.
 kubectl -n kubeseal-ui logs deploy/kubeseal-ui-api | grep trace_id | head -3

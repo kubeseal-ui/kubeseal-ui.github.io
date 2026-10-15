@@ -12,7 +12,7 @@ specific, and that is the sole job of a proposal adapter.
 A proposal delivery does exactly this:
 
 1. read the namespace mapping (repository, base branch, path template, auth reference, fixed mode)
-2. push the change to a server-derived branch, `kubeseal-ui/<namespace-path>`
+2. push the change to a server-derived branch, `kubeseal-ui/<namespace>-<name>`
 3. call the configured adapter with the pushed branch and commit
 4. return `mode`, `branch`, `commit_sha`, `proposal_url`, and `argocd_sync_verified: false`
 

@@ -29,11 +29,28 @@ merged proposal does not mean ArgoCD synchronized.
 ## Git/live drift
 
 Editing an existing secret requires exactly one mapped Git file whose canonical SealedSecret matches the live
-resource. The error code tells you which side is wrong:
+resource. Any state but `in-sync` is refused with the one code `409 GIT_DRIFT`, so what separates the causes is
+the `drift` value the Secret's status carries — and, when both sides exist, the `drift_reason` beside it:
 
-- `GIT_SOURCE_MISSING`: no file at the derived path on the mapped branch.
-- `GIT_LIVE_DRIFT`: the Git and live content differ. Reconcile first, then edit.
-- identity mismatch: the `namespace`/`name` inside the manifest does not match the route; fix the manifest.
+- `live_only` — no file at the derived path on the mapped branch. For a live Secret, this is the state the
+  sync endpoint exists to resolve; it creates the file on the branch head.
+- `git_only` — a mapped file with no live Secret at the route.
+- `diverged` — both exist and differ. `drift_reason` names which part, and `drift_fields` lists the paths:
+  - `identity`: the `namespace`/`name` inside the manifest does not match the route; fix the manifest. This
+    is the one divergence a sync cannot resolve, because the file at the path belongs to another Secret.
+  - `keys` or `ciphertext`: the two copies hold different values.
+  - `template` or `metadata`: a non-payload field differs, such as an annotation or the sealed template block.
+- `unknown` — the status could not be resolved at all.
+
+A read that never reached Git is not drift and is never reported as it:
+
+- `409 GIT_STATE_UNAVAILABLE` — the read failed; Git did not answer.
+- `409 BASE_COMMIT_CONFLICT` — the base commit named by the request is no longer the branch head.
+- The reference status also carries `git_moved_ahead`, which is true when the live manifest is the version the
+  file held before its most recent change.
+
+Two further causes have no code of their own:
+
 - pending ArgoCD reconciliation: the commit landed but the controller has not applied it yet.
 - out-of-band cluster mutation: someone edited the live SealedSecret; restore one side first.
 
@@ -70,7 +87,8 @@ handler (check auth and CSRF middleware first).
 ## Proposal delivery failure
 
 1. Confirm namespace mode is `proposal` and the user has `gitops:propose`.
-2. Verify the generic branch push succeeded — the branch name is `kubeseal-ui/<namespace-path>`.
+2. Verify the generic branch push succeeded — the branch name is `kubeseal-ui/<namespace>-<name>`, derived
+   from the namespace and Secret, so a retry reconciles onto the same branch.
 3. Verify the configured proposal adapter and its credential:
    - `read github token` means the mounted token file is missing; `github token file is empty` means it is
      blank.

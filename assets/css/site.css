@@ -4,44 +4,111 @@
  * hierarchy through type before boxes. No gradient heroes, no glass, no
  * icon toppers — hierarchy comes from scale, weight, and spacing.
  *
- * Tokens: light theme is the default reading surface; dark follows the OS
- * or the stored toggle. Text tokens gate at 4.5:1, borders and focus at
- * 3:1 (WCAG 1.4.11 / 2.4.7). The focus ring token is gated against both
- * surface and bg.
+ * The palette is the product's, not this site's: every value below is a copy of the
+ * corresponding --app-* token in frontend/src/style.css, and the names are kept so a
+ * change there can be found here by the same word. Dark is the design's home theme —
+ * the app is a tool an operator leaves open and its content is machine output, which is
+ * what the redesign was drawn against — so the dark values are the ones to read first.
+ * The toggle stays because a documentation page is read, sometimes for a long time.
+ *
+ * Two rules come across with the palette, and both are load-bearing:
+ *
+ *   1. The only shadow in this design is the focus ring, and nothing lifts on hover.
+ *      A hovered row or link changes colour and background, never position or elevation.
+ *   2. --app-faint is DECORATIVE ONLY. It is held below WCAG AA on purpose so it recedes,
+ *      which means nothing carrying information may use it — that is why text tokens gate
+ *      at 4.5:1 and borders and the focus ring at 3:1 (WCAG 1.4.11 / 2.4.7), and why faint
+ *      appears here exactly once, on the unselected glyph of the theme control.
+ *
+ * Text tokens gate at 4.5:1, borders and focus at 3:1. The focus ring is the accent itself:
+ * the app carries a --app-focus token whose value is the accent in both palettes, so there is
+ * nothing here for a second name to say.
  */
 
 :root {
-  --font-sans: "Inter", "SF Pro Text", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, "Cascadia Code", monospace;
 
-  /* Light theme */
-  --color-bg: #fafaf9;
-  --color-surface: #ffffff;
-  --color-ink: #1c1917;
-  --color-muted: #57534e;
-  --color-border: #e7e5e4;
-  --color-border-strong: #d6d3d1;
-  --color-accent: #0f766e;          /* teal-700: chosen for the product (sealed secrets, trust), not the model default */
-  --color-accent-soft: #ccfbf1;     /* teal-100 */
-  --color-accent-ink: #134e4a;      /* teal-900 */
-  --color-code-bg: #f5f5f4;
-  --color-code-ink: #292524;
-  --color-focus: #0f766e;
+  /* Geometry: the app's radius scale, copied whole. Each step is used here at the same level it
+     is used there — card to a code block, control to a button or a nav link, chip to an inline
+     well — and the two that no rule on this site reads yet (screen, mini) are kept so the scale
+     stays a scale: the value a future panel or a future tab strip needs is the one already
+     written down, not a new number chosen here. */
+  --radius-screen: 14px;
+  --radius-card: 12px;
+  --radius-control: 9px;
+  --radius-mini: 7px;
+  --radius-chip: 6px;
+
+  /* Motion, copied from the app. Only five things there use the long steps and none of them
+     is a link, so this site needs the pointer step alone: colours and opacity, nothing that
+     moves. */
+  --mo-quick: 150ms;
+  --mo-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-theme="dark"] {
-  --color-bg: #0f1412;
-  --color-surface: #161d1a;
-  --color-ink: #e7e5e4;
-  --color-muted: #a8a29e;
-  --color-border: #2b332f;
-  --color-border-strong: #3d473f;
-  --color-accent: #5eead4;          /* teal-300 on dark */
-  --color-accent-soft: #134e4a;     /* teal-900 */
-  --color-accent-ink: #99f6e4;
-  --color-code-bg: #1c2420;
-  --color-code-ink: #d6d3d1;
-  --color-focus: #5eead4;
+/* Light palette. Must stay the first palette block: it is the fallback when the theme script
+   does not run, so a reader with JavaScript off still gets a complete theme. */
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --app-bg: #f4f6fb;
+  --app-surface: #ffffff;
+  --app-surface-raised: #eef1f8;
+  --app-ink: #12151c;
+  --app-muted: #5a6478;
+  --app-faint: #6a7488;
+  --app-border: #dde3ee;
+  --app-border-strong: #c3ccdd;
+  --app-accent: #3b4fd8;
+  --app-accent-ink: #ffffff;
+  --app-danger: #c62f26;
+  --app-success: #0d7a48;
+  --app-warning: #8a5300;
+  --app-info: #1c5fc4;
+}
+
+/* Dark palette, media form: the reader whose OS prefers dark gets dark before the script
+   runs, and gets it at all if the script never does. It is unguarded because the explicit
+   light rule above out-specifies it — an attribute selector beats a bare :root — so a stored
+   light choice still wins on a dark host. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --app-bg: #0b0e15;
+    --app-surface: #141922;
+    --app-surface-raised: #1b2130;
+    --app-ink: #e9eef7;
+    --app-muted: #96a3b8;
+    --app-faint: #78849a;
+    --app-border: #242c3b;
+    --app-border-strong: #333d51;
+    --app-accent: #7f95ff;
+    --app-accent-ink: #0b0e15;
+    --app-danger: #ff7a70;
+    --app-success: #5fd8a0;
+    --app-warning: #f3b95f;
+    --app-info: #6fb6ff;
+  }
+}
+
+/* Dark palette, explicit-choice form. A stored preference cannot be expressed from inside a
+   media rule, so the same values are declared a second time. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --app-bg: #0b0e15;
+  --app-surface: #141922;
+  --app-surface-raised: #1b2130;
+  --app-ink: #e9eef7;
+  --app-muted: #96a3b8;
+  --app-faint: #78849a;
+  --app-border: #242c3b;
+  --app-border-strong: #333d51;
+  --app-accent: #7f95ff;
+  --app-accent-ink: #0b0e15;
+  --app-danger: #ff7a70;
+  --app-success: #5fd8a0;
+  --app-warning: #f3b95f;
+  --app-info: #6fb6ff;
 }
 
 * { box-sizing: border-box; }
@@ -51,13 +118,17 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.65;
-  color: var(--color-ink);
-  background: var(--color-bg);
+  color: var(--app-ink);
+  background: var(--app-bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* The app's one pointer transition, and its list of properties is the point: nothing in
+   this design moves or lifts, so only colour and opacity may change. */
+a, button { transition: color var(--mo-quick) var(--mo-out), background-color var(--mo-quick) var(--mo-out), border-color var(--mo-quick) var(--mo-out); }
 
 .shell {
   max-width: 76rem;
@@ -71,23 +142,25 @@ body {
   position: absolute;
   left: -999px;
   top: 0;
-  background: var(--color-accent);
-  color: var(--color-bg);
-  padding: 0.5rem 1rem;
-  border-radius: 0 0 0.5rem 0;
+  background: var(--app-accent);
+  color: var(--app-accent-ink);
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border-radius: 0 0 var(--radius-control) 0;
   z-index: 10;
 }
 .skip-link:focus { left: 0; }
 
 /* --- Header --------------------------------------------------------------- */
 
+/* Solid, not translucent: the app's header is a surface, and blur here would be decoration
+   carrying no meaning. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .header-row {
@@ -102,24 +175,41 @@ body {
   align-items: center;
   gap: 0.6rem;
   text-decoration: none;
-  color: var(--color-ink);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  color: var(--app-ink);
 }
 
-.brand-mark { width: 1.5rem; height: 1.5rem; color: var(--color-accent); }
-.brand-mark .brand-bg { fill: var(--color-accent-soft); }
-[data-theme="dark"] .brand-mark .brand-bg { fill: color-mix(in srgb, var(--color-accent-soft) 55%, transparent); }
+/* The mark is the accent's one filled appearance, as it is in the app's header: a 30px tile
+   in the accent with the glyph knocked out in the colour that reads on it. The tile is a
+   span rather than the svg itself, because a background on an svg root is a replaced-element
+   edge case while a background on a span is not. */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  color: var(--app-accent-ink);
+  background: var(--app-accent);
+  border-radius: var(--radius-control);
+}
+.brand-mark svg { width: 19px; height: 19px; }
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
 
 .brand-tag {
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-muted);
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
-  padding: 0.05rem 0.5rem;
+  color: var(--app-muted);
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--radius-chip);
+  padding: 0.1rem 0.4rem;
 }
 
 .header-actions {
@@ -130,33 +220,49 @@ body {
 }
 
 .header-link {
-  color: var(--color-muted);
+  color: var(--app-muted);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   padding: 0.35rem 0.6rem;
-  border-radius: 0.45rem;
+  border-radius: var(--radius-control);
 }
-.header-link:hover { color: var(--color-ink); background: var(--color-code-bg); }
+.header-link:hover { color: var(--app-ink); background: var(--app-surface-raised); }
 
+/* The theme control is the app's: a row of pressed buttons rather than one cycling toggle,
+   because a cycle button cannot show which of the three you are in — and with two it cannot
+   offer a way back to following the OS. The unselected glyph is the one use of --app-faint
+   here, and it is decoration: the button's name is its aria-label, so nothing informational
+   rests on that colour. */
 .theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-control);
+  background: var(--app-bg);
+}
+
+.theme-toggle button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
+  width: 26px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-chip);
   background: transparent;
-  color: var(--color-muted);
+  color: var(--app-faint);
   cursor: pointer;
 }
-.theme-toggle:hover { color: var(--color-ink); background: var(--color-code-bg); }
-.theme-toggle:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-
-[data-theme="light"] .icon-moon { display: none; }
-[data-theme="dark"] .icon-sun { display: none; }
-.icon-sun, .icon-moon { width: 1.05rem; height: 1.05rem; }
+.theme-toggle button:hover { color: var(--app-ink); }
+.theme-toggle button[aria-pressed="true"] { background: var(--app-surface-raised); color: var(--app-accent); }
+.theme-toggle svg { width: 14px; height: 14px; }
+/* The ring sits inside the button rather than outside it, because outside it would land on the
+   group's own 3px padding and read as a border around the whole control rather than as the
+   position of the keyboard. */
+.theme-toggle button:focus-visible { outline-offset: -2px; }
 
 .header-github {
   display: inline-flex;
@@ -164,11 +270,11 @@ body {
   justify-content: center;
   width: 2.1rem;
   height: 2.1rem;
-  color: var(--color-muted);
-  border-radius: 0.5rem;
+  color: var(--app-muted);
+  border-radius: var(--radius-control);
 }
-.header-github:hover { color: var(--color-ink); background: var(--color-code-bg); }
-.header-github svg { width: 1.15rem; height: 1.15rem; }
+.header-github:hover { color: var(--app-ink); background: var(--app-surface-raised); }
+.header-github svg { width: 1.05rem; height: 1.05rem; }
 
 /* --- Layout ---------------------------------------------------------------- */
 
@@ -188,41 +294,40 @@ body {
   align-self: start;
   max-height: calc(100vh - 5.5rem);
   overflow-y: auto;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .nav-group + .nav-group { margin-top: 1.6rem; }
 
 .nav-heading {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: var(--color-muted);
+  color: var(--app-muted);
   margin-bottom: 0.45rem;
 }
 
 .nav-list { list-style: none; margin: 0; padding: 0; }
 
+/* Current location is an accent edge, not a tinted fill: the app has no tinted fill token,
+   and a fill at this scale would outweigh the content it points at. */
 .nav-link {
   display: block;
-  padding: 0.28rem 0.6rem;
+  padding: 0.3rem 0.6rem;
   margin-left: -0.6rem;
-  color: var(--color-muted);
+  color: var(--app-muted);
   text-decoration: none;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-control);
   border-left: 2px solid transparent;
 }
-.nav-link:hover { color: var(--color-ink); background: var(--color-code-bg); }
+.nav-link:hover { color: var(--app-ink); background: var(--app-surface-raised); }
 .nav-link.is-active {
-  color: var(--color-accent-ink);
-  background: var(--color-accent-soft);
-  border-left-color: var(--color-accent);
-  font-weight: 500;
+  color: var(--app-ink);
+  font-weight: 600;
+  background: var(--app-surface-raised);
+  border-left-color: var(--app-accent);
 }
-[data-theme="dark"] .nav-link.is-active { color: var(--color-accent-ink); }
-
-.nav-link:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; }
 
 /* --- Content typography ------------------------------------------------------ */
 
@@ -230,64 +335,71 @@ body {
 
 .page-header { margin-bottom: 2rem; }
 
+/* Every title in this product is a name — a namespace, a Secret, or the product's own name
+   for a screen — so the app sets its page titles in mono at page scale and semibold. A
+   documentation page title is the same kind of thing, so it is set the same way. */
 .page-header h1 {
-  font-size: 2rem;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.6rem;
 }
 
 .page-lede {
-  font-size: 1.08rem;
-  color: var(--color-muted);
+  font-size: 1.0625rem;
+  color: var(--app-muted);
   margin: 0;
   max-width: 46rem;
   text-wrap: pretty;
 }
 
 .content h2 {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   letter-spacing: -0.015em;
   line-height: 1.25;
   margin: 2.6rem 0 0.8rem;
   padding-top: 1.4rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--app-border);
 }
 .content h2:first-of-type { border-top: 0; padding-top: 0; margin-top: 1.8rem; }
 
 .content h3 {
-  font-size: 1.05rem;
+  font-size: 1.03125rem;
   letter-spacing: -0.01em;
   margin: 1.8rem 0 0.6rem;
 }
 
 .content p { margin: 0.7rem 0; max-width: 46rem; text-wrap: pretty; }
 
-.content a { color: var(--color-accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.content a { color: var(--app-accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .content a:hover { text-decoration-thickness: 2px; }
 
 .content strong { font-weight: 600; }
 
 .content ul, .content ol { margin: 0.7rem 0; padding-left: 1.4rem; max-width: 44rem; }
 .content li { margin: 0.3rem 0; }
-.content li::marker { color: var(--color-muted); }
+.content li::marker { color: var(--app-muted); }
 
 /* --- Code ---------------------------------------------------------------------- */
 
+/* Both wells are --app-surface-raised, the app's step toward the page from the surface it nests
+   in: in the app a code block is cut into a card, and here into the page itself. */
 .content code {
   font-family: var(--font-mono);
-  font-size: 0.84em;
-  background: var(--color-code-bg);
-  color: var(--color-code-ink);
-  border: 1px solid var(--color-border);
-  border-radius: 0.35rem;
+  font-size: 0.85em;
+  background: var(--app-surface-raised);
+  color: var(--app-ink);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-chip);
   padding: 0.08em 0.35em;
 }
 
 .content pre {
-  background: var(--color-code-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 0.7rem;
+  background: var(--app-surface-raised);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-card);
   padding: 1rem 1.15rem;
   overflow-x: auto;
   margin: 1rem 0 1.4rem;
@@ -301,18 +413,15 @@ body {
   font-size: 0.84rem;
 }
 
-/* Rouge highlight tokens (teal-forward, restrained) */
-.highlight .k, .highlight .kn, .highlight .kd { color: #7c3aed; font-weight: 500; }
-[data-theme="dark"] .highlight .k, [data-theme="dark"] .highlight .kn, [data-theme="dark"] .highlight .kd { color: #c4b5fd; }
-.highlight .s, .highlight .s1, .highlight .s2, .highlight .sh { color: #0f766e; }
-[data-theme="dark"] .highlight .s, [data-theme="dark"] .highlight .s1, [data-theme="dark"] .highlight .s2, [data-theme="dark"] .highlight .sh { color: #5eead4; }
-.highlight .c1, .highlight .cm, .highlight .c { color: var(--color-muted); font-style: italic; }
-.highlight .nf, .highlight .nc { color: #b45309; }
-[data-theme="dark"] .highlight .nf, [data-theme="dark"] .highlight .nc { color: #fcd34d; }
-.highlight .mi, .highlight .mf { color: #b91c1c; }
-[data-theme="dark"] .highlight .mi, [data-theme="dark"] .highlight .mf { color: #fca5a5; }
-.highlight .na, .highlight .nt { color: #1d4ed8; }
-[data-theme="dark"] .highlight .na, [data-theme="dark"] .highlight .nt { color: #93c5fd; }
+/* Rouge highlight tokens, drawn only from the app's own palette so a code block belongs to
+   the product rather than to a borrowed scheme. Each is the app token that reads on the well
+   in both themes. */
+.highlight .k, .highlight .kn, .highlight .kd { color: var(--app-accent); font-weight: 500; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sh { color: var(--app-success); }
+.highlight .c1, .highlight .cm, .highlight .c { color: var(--app-muted); font-style: italic; }
+.highlight .nf, .highlight .nc { color: var(--app-warning); }
+.highlight .mi, .highlight .mf { color: var(--app-danger); }
+.highlight .na, .highlight .nt { color: var(--app-info); }
 
 /* --- Tables ----------------------------------------------------------------------- */
 
@@ -320,27 +429,27 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin: 1.1rem 0 1.6rem;
-  font-size: 0.92rem;
+  font-size: 0.90625rem;
 }
 
 .content th {
   text-align: left;
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-muted);
+  color: var(--app-muted);
   padding: 0.5rem 0.8rem;
-  border-bottom: 2px solid var(--color-border-strong);
+  border-bottom: 2px solid var(--app-border-strong);
 }
 
 .content td {
   padding: 0.55rem 0.8rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--app-border);
   vertical-align: top;
 }
 
-.content tbody tr:hover { background: var(--color-code-bg); }
+.content tbody tr:hover { background: var(--app-surface-raised); }
 .content tbody tr:last-child td { border-bottom: 0; }
 
 /* --- Page footer -------------------------------------------------------------------- */
@@ -348,15 +457,17 @@ body {
 .page-footer {
   margin-top: 3.5rem;
   padding-top: 1.2rem;
-  border-top: 1px solid var(--color-border);
-  color: var(--color-muted);
-  font-size: 0.85rem;
+  border-top: 1px solid var(--app-border);
+  color: var(--app-muted);
+  font-size: 0.8125rem;
 }
 .page-footer p { margin: 0; max-width: none; }
 
 /* --- Focus and motion ------------------------------------------------------------------ */
 
-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+/* The one shadow in this design, and the one thing that must never animate: a keyboard user
+   may not wait for their position to settle. */
+:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -370,12 +481,11 @@ body {
   .sidebar {
     position: static;
     max-height: none;
-    border: 1px solid var(--color-border);
-    border-radius: 0.7rem;
-    background: var(--color-surface);
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-card);
+    background: var(--app-surface);
     padding: 1rem 1.1rem;
   }
-  .nav-link { margin-left: -0.6rem; }
-  .page-header h1 { font-size: 1.6rem; }
+  .page-header h1 { font-size: 1.4rem; }
   .content pre { padding: 0.85rem 0.95rem; }
 }

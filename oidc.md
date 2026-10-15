@@ -62,12 +62,13 @@ request.
 
 ## Group claims and capabilities
 
-The API resolves capabilities from the OIDC groups claim through the policy store: each group maps to a role,
-and the role lists the capabilities. The API checks capabilities, never role names, so a custom role must list
-every capability it needs. See [capabilities.md](capabilities.md).
+The API resolves capabilities from the OIDC groups claim through the policy store: a group maps to a role, and
+the role lists the capabilities. Whether that mapping is a policy document you write or the built-in role
+names themselves depends on whether `CONFIG_PATH` is set — see [capabilities.md](capabilities.md). The API
+checks capabilities, never role names, so a custom role must list every capability it needs.
 
 If a user sees "namespace or action missing", confirm their group claim actually contains the groups your
-policy maps — the mapping is exact, and a missing group silently yields no capabilities.
+policy maps — matching is exact, and a missing or unmatched group yields no capabilities.
 
 ## Verify
 

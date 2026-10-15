@@ -18,8 +18,18 @@ the API checks capabilities, never role names, so a custom role must list every 
 | `gitops:push` | deliver directly to the mapped branch |
 | `access:manage` | platform diagnostics and cluster-wide sealing with `secret:seal` |
 
-Capability resolution comes from the OIDC groups claim: each group maps to a role, and the role lists
-capabilities. Matching groups contribute a union of capabilities.
+Capability resolution starts from the OIDC groups claim. How a group becomes capabilities depends on whether
+the deployment mounts a policy document:
+
+- **With `CONFIG_PATH` set** the document maps group names to roles — built-in or custom — and a rule may
+  scope its grant to particular namespaces, or to any namespace. The API refuses to boot on a document it
+  cannot parse rather than serving one the operator did not write, and re-reads it on `SIGHUP`. Mounting a
+  document is a cutover, not an addition: while one is loaded, a group name that merely matches a built-in
+  role grants nothing.
+- **With no document**, a group grants a bundle only when it is named exactly after a built-in role. An
+  unmatched group silently yields no capabilities.
+
+Matching groups contribute a union of capabilities.
 
 ## Built-in roles
 
@@ -68,14 +78,35 @@ group names to one role; duplicate role definitions and unknown role references 
 
 ## Editing workflow (what the user sees)
 
-1. Open a Git-managed SealedSecret whose Git and live states match.
-2. View key names; values remain concealed.
-3. Reveal a key only when needed. The browser receives only that key.
-4. Enter the new value for the selected key.
-5. Patch and reseal. The server preserves unrelated values internally.
-6. Review the encrypted Git diff.
-7. Deliver using the namespace policy: direct returns a verified commit; proposal returns a review URL.
-8. Check ArgoCD and SealedSecret reconciliation separately.
+1. Open a Git-managed SealedSecret whose Git and live states match. The mode switch above the list flips the
+   document between **Key rows** and the read-only **YAML** the cluster holds.
+2. Key names are listed; values remain concealed.
+3. Reveal a key only when needed. The browser receives only that key, and **Conceal** drops it again. A reveal
+   is a look, not a change — it stages nothing.
+4. Stage each change inside its own key row: **Change** an existing key (Replace or Delete), **Add key** for a
+   key the Secret does not have yet, **Remove** to stage a deletion directly, and **Discard** or **Discard
+   all** to undo. A value longer than one line — a private key, a kubeconfig, a config file — needs the
+   **lines** control beside the value field, which opens it into a box several lines tall. The one-line field
+   is a password field, and HTML drops newlines from those, so a block pasted into it would arrive silently
+   joined into a single line.
+5. Press the button at the foot of the page once for everything staged together. It carries the name of the
+   next press rather than the name of a stage, so there is nothing to work out about where you are:
+   **Review change** sends the batch as a single request and names the keys and operations it covers, never
+   values; **Apply & check** confirms the encrypted patch — the server preserves unrelated values internally —
+   and runs the dry run against the branch in the same press; **Deliver to Git**, or **Create proposal** where
+   the namespace delivers by proposal, delivers through the namespace policy. **Edit**, on the workflow rail
+   above and in the bar over the review or the check, drops the review and the check and returns you to the
+   rows with everything staged still there; the button at the foot never steps back.
+6. Review the encrypted Git diff beside the document. The panel names the file the check resolved and the
+   branch, so the destination is on screen before the delivery press.
+7. Check ArgoCD and SealedSecret reconciliation separately.
+
+Creating a Secret runs the same review-and-deliver flow, from a manifest rather than a key list. The **Name**
+field and the manifest's `metadata.name` are one value in two places, and whichever is written last holds:
+typing in the field moves the line, and writing or pasting the line moves the field. They cannot disagree,
+which matters because the server refuses a manifest whose name is not the one the request carries. Once
+encrypted, only ciphertext is held: the form folds to a summary row with **Edit** to reopen the manifest, and
+**Discard encrypted draft** clears the name and target directory with it.
 
 Every reveal, patch, and delivery attempt creates a security event without recording values. Plaintext is
 non-cacheable and never stored in browser persistence; a revealed value is cleared on patch, cancellation,
