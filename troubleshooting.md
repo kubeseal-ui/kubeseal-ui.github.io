@@ -99,7 +99,8 @@ open the review object. If the host call fails you get `502 PROPOSAL_FAILED` and
    same branch instead of creating duplicates.
 2. Verify the token file: a missing file fails with `read github token`, an empty file with
    `github token file is empty`.
-3. Verify scopes. A GitHub fine-grained PAT needs Contents read/write and Metadata read.
+3. Verify scopes. A GitHub fine-grained PAT needs Pull requests read/write, Contents read, and Metadata read
+   (the branch push uses the `authRef` credential, so Contents write is not required).
 4. Verify the API root. For GitHub Enterprise Server set the adapter `baseUrl` (`https://<host>/api/v3`);
    otherwise calls go to `api.github.com`.
 5. Confirm the repository identifier is exactly `owner/repo`. The adapter rejects anything else before

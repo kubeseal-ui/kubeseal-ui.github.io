@@ -92,7 +92,8 @@ handler (check auth and CSRF middleware first).
 3. Verify the configured proposal adapter and its credential:
    - `read github token` means the mounted token file is missing; `github token file is empty` means it is
      blank.
-   - A GitHub fine-grained PAT needs Contents read/write and Metadata read.
+   - A GitHub fine-grained PAT needs Pull requests read/write, Contents read, and Metadata read (the branch
+     push uses the mapping's `authRef` credential, so Contents write is not required).
    - GitHub Enterprise Server needs the adapter `baseUrl` (`https://<host>/api/v3`); otherwise calls go to
      `api.github.com`.
    - The repository identifier must be exactly `owner/repo`; anything else fails before the host is called.

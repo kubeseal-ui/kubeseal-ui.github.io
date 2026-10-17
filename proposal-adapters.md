@@ -67,8 +67,11 @@ The file name must match the last path component of `tokenFile`. The chart mount
 
 - Endpoint: `POST <base>/repos/<owner>/<repo>/pulls` with `Accept: application/vnd.github+json`,
   `X-GitHub-Api-Version: 2022-11-28`, and the token as a Bearer credential.
-- Token: a fine-grained personal access token with **Contents read/write** and **Metadata read** on the
-  target repository, stored in a Kubernetes Secret and mounted as a file. The file is read on every call, so
+- Token: a fine-grained personal access token with **Pull requests read/write**, **Contents read**, and
+  **Metadata read** on the target repository, stored in a Kubernetes Secret and mounted as a file. Read/write on
+  Contents is harmless but unnecessary: the adapter only verifies that the proposal branch exists and opens the
+  pull request, while the branch push itself uses the mapping's `authRef` credential, not this token. The file is
+  read on every call, so
   rotating the Secret takes effect without a restart. Tokens never appear in configuration, logs, or
   responses.
 - Base URL: empty means `https://api.github.com`; set `baseUrl` for GitHub Enterprise Server
