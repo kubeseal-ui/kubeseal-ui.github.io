@@ -53,8 +53,8 @@ that hold.
 - A revealed value reaches the browser only for the requested key, is non-cacheable
   (`Cache-Control: no-store`), and is cleared on patch, cancellation, timeout, logout, or navigation.
 - Unrequested values never enter the browser.
-- The server decrypts the complete Secret internally only to preserve unrelated values during a patch; the
-  response never serializes it.
+- A patch never decrypts. The server seals only the values being added or replaced and carries every
+  untouched entry through byte-for-byte, so the private key is loaded by reveal alone.
 - Plaintext never appears in diffs, logs, errors, or security events.
 
 ## Canonical drift comparison

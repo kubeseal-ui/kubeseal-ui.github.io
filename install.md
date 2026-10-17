@@ -37,8 +37,8 @@ seccomp.
 
 ## Decrypt mode
 
-`api.enableDecrypt` must be an explicit choice — reveal and patch require it, and the conditional
-controller-key RBAC renders only when it is true.
+`api.enableDecrypt` must be an explicit choice — reveal requires it, and the conditional
+controller-key RBAC renders only when it is true. Creating and editing SealedSecrets work without it.
 
 ```bash
 --set api.enableDecrypt=true \

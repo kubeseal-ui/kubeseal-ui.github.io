@@ -64,9 +64,12 @@ Reveal returns exactly one requested value. It never serializes the whole decryp
 
 ## Patch unavailable
 
-Patching one key requires both `secret:seal` and `secret:decrypt`, because the server decrypts the complete
-Secret internally to preserve unrelated values. A role with only `secret:seal` can create secrets but cannot
-patch them.
+Patching requires `secret:seal` only. The server never decrypts: it seals the values being added or
+replaced, deletes the entries being removed, and carries every untouched entry through byte-for-byte. A
+`403 CAPABILITY_DENIED` means the caller lacks `secret:seal` in the namespace — plus `access:manage` when
+the SealedSecret is cluster-wide. A `400 INVALID_MUTATION` naming `spec.data` or `spec.template.data`
+means the manifest must be recreated through the create path before it can be edited. `ENABLE_DECRYPT`
+does not gate patching.
 
 ## Wrong delivery action
 

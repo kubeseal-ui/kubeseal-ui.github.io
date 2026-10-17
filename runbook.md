@@ -60,15 +60,21 @@ Two further causes have no code of their own:
 4. Identify out-of-band cluster changes or an incorrect mapping.
 5. Reconcile through Git. Do not bypass drift protection.
 
-## Reveal or patch failure
+## Reveal failure
 
 1. Confirm `ENABLE_DECRYPT=true` ("true" is the only value that enables it).
-2. Confirm the `secret:decrypt` capability; patch also requires `secret:seal`, because the server decrypts the
-   complete Secret internally to preserve unrelated values.
+2. Confirm the `secret:decrypt` capability.
 3. Verify conditional controller-key RBAC and active-key selection (`KUBESEAL_ACTIVE_KEY_LABEL` must match a
    key Secret in `KUBESEAL_CONTROLLER_NAMESPACE`).
 4. Inspect the security event by request ID without exposing values.
 5. Treat historical-key failure as unsupported rather than corrupt ciphertext.
+
+## Patch failure
+
+Patching needs `secret:seal`, the public certificate, and a Git/live match; it never loads a private key, so
+`ENABLE_DECRYPT` and controller-key RBAC are not involved. Check `secret:seal` in the namespace — plus
+`access:manage` for a cluster-wide SealedSecret — then the mapped Git state. A `400 INVALID_MUTATION`
+naming `spec.data` or `spec.template.data` means the manifest must be recreated before it can be edited.
 
 Reveal returns exactly one requested value, never the whole decrypted object. Every attempt emits a security
 event with operation, actor, scope, result, and request ID; a missing event means the request never reached the

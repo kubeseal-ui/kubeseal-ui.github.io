@@ -11,12 +11,11 @@ the API checks capabilities, never role names, so a custom role must list every 
 | Capability | Allows |
 |------------|--------|
 | `metadata:read` | list and inspect encrypted namespaces and SealedSecrets |
-| `secret:seal` | create new sealed secrets at vacant mapped paths |
+| `secret:seal` | create new sealed secrets, and add, replace, or delete keys in an existing one |
 | `secret:decrypt` | reveal exactly one existing value (requires `ENABLE_DECRYPT=true`) |
-| `secret:seal` + `secret:decrypt` | patch one key and preserve the rest |
 | `gitops:propose` | deliver through a proposal adapter (pull/merge request) |
 | `gitops:push` | deliver directly to the mapped branch |
-| `access:manage` | platform diagnostics and cluster-wide sealing with `secret:seal` |
+| `access:manage` | platform diagnostics, and cluster-wide creation or editing with `secret:seal` |
 
 Capability resolution starts from the OIDC groups claim. How a group becomes capabilities depends on whether
 the deployment mounts a policy document:
@@ -71,8 +70,9 @@ group names to one role; duplicate role definitions and unknown role references 
 
 - Content preparation (`secret:seal`) is separate from sensitive read (`secret:decrypt`) and release
   (`gitops:push` / `gitops:propose`).
-- Patching one key requires both `secret:seal` and `secret:decrypt`, because the server decrypts the complete
-  Secret internally to preserve unrelated values.
+- Patching a key requires `secret:seal` only. The server never decrypts: `add` and `replace` seal just the
+  value they introduce, `delete` drops one entry, and every other entry is carried through byte-for-byte.
+  `secret:decrypt` is reveal-only.
 - Release duties split further: `gitops:propose` (branch + review object) and `gitops:push` (direct delivery)
   are independent capabilities, so a team can require review before delivery.
 
@@ -92,7 +92,8 @@ group names to one role; duplicate role definitions and unknown role references 
 5. Press the button at the foot of the page once for everything staged together. It carries the name of the
    next press rather than the name of a stage, so there is nothing to work out about where you are:
    **Review change** sends the batch as a single request and names the keys and operations it covers, never
-   values; **Apply & check** confirms the encrypted patch — the server preserves unrelated values internally —
+   values; **Apply & check** confirms the encrypted patch — the server edits only the entries you staged and
+   leaves the rest of the manifest untouched —
    and runs the dry run against the branch in the same press; **Deliver to Git**, or **Create proposal** where
    the namespace delivers by proposal, delivers through the namespace policy. **Edit**, on the workflow rail
    above and in the bar over the review or the check, drops the review and the check and returns you to the
