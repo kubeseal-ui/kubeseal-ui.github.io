@@ -6,6 +6,9 @@ description: What each capability allows, built-in roles, and the platform-admin
 kubeseal-ui separates plaintext, platform, and Git-delivery permissions. Roles are convenience bundles only;
 the API checks capabilities, never role names, so a custom role must list every capability it needs.
 
+The per-operation and per-role reference is the [Capability matrix](capability-matrix.md). This page explains
+the model behind it.
+
 ## Capabilities
 
 | Capability | Allows |
@@ -15,7 +18,7 @@ the API checks capabilities, never role names, so a custom role must list every 
 | `secret:decrypt` | reveal exactly one existing value (requires `ENABLE_DECRYPT=true`) |
 | `gitops:propose` | deliver through a proposal adapter (pull/merge request) |
 | `gitops:push` | deliver directly to the mapped branch |
-| `access:manage` | platform diagnostics, and cluster-wide creation or editing with `secret:seal` |
+| `access:manage` | cluster-wide creation or editing, paired with `secret:seal` |
 
 Capability resolution starts from the OIDC groups claim. How a group becomes capabilities depends on whether
 the deployment mounts a policy document:
@@ -48,7 +51,7 @@ Administrative authority does not implicitly grant access to every namespace's s
 - platform-admin does **not** implicitly decrypt all secrets — `secret:decrypt` is a separate capability that
   must be granted explicitly
 - platform-admin does **not** implicitly push to Git — `gitops:push`/`gitops:propose` are separate
-- platform-admin gains cluster-wide **sealing** (with `secret:seal`) and diagnostics, not team plaintext
+- platform-admin gains cluster-wide **sealing** (with `secret:seal`), not team plaintext
 
 This is pinned by tests: administrators lack implicit sensitive access, and the UI renders capability-gated
 actions only for users who hold the capability.
@@ -68,7 +71,7 @@ group names to one role; duplicate role definitions and unknown role references 
 
 ## Separation of duties
 
-- Content preparation (`secret:seal`) is separate from sensitive read (`secret:decrypt`) and release
+- Sealing and editing (`secret:seal`) are separate from sensitive read (`secret:decrypt`) and release
   (`gitops:push` / `gitops:propose`).
 - Patching a key requires `secret:seal` only. The server never decrypts: `add` and `replace` seal just the
   value they introduce, `delete` drops one entry, and every other entry is carried through byte-for-byte.
